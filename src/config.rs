@@ -1,3 +1,5 @@
+use std::{fs, path::PathBuf};
+
 use anyhow::{Context, Result};
 use serde::Deserialize;
 
@@ -21,6 +23,18 @@ impl Config {
         let decoded: Self =
             toml::from_str(&content.to_string()).context("failed to decode config toml")?;
         Ok(decoded)
+    }
+
+    pub fn read() -> String {
+        let location = dirs::home_dir()
+            .unwrap()
+            .join(".config")
+            .join("things3-scraper")
+            .join("config.toml");
+        let contents = fs::read_to_string(location)
+            .context("reading config content failed")
+            .unwrap();
+        contents
     }
 }
 
