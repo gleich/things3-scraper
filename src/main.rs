@@ -29,15 +29,12 @@ fn main() {
     let wait_time = Duration::from_secs(config.refresh as u64);
 
     println!();
-    info!("waiting for new data...");
     loop {
-        let new_data = Data::fetch().expect("failed to fetch most recent data");
-        if new_data != recent_data {
-            recent_data = new_data;
-            recent_data
-                .send(&client, &config)
-                .expect("failed to send newest data");
-        }
+        recent_data = Data::fetch().expect("failed to fetch most recent data");
+        recent_data
+            .send(&client, &config)
+            .expect("failed to send newest data");
+        info!("sent data");
         sleep(wait_time);
     }
 }
