@@ -3,6 +3,7 @@ use std::{thread::sleep, time::Duration};
 use config::Config;
 use data::Data;
 use reqwest::blocking::Client;
+use sentry;
 use tracing::{info, Level};
 use tracing_subscriber::FmtSubscriber;
 
@@ -17,6 +18,8 @@ fn main() {
     info!("booted");
     let config = Config::parse(Config::read()).expect("parsing configuration file failed");
     info!("loaded config");
+    let _guard = sentry::init(config.sentry_url.clone());
+    info!("setup sentry");
     let client = Client::new();
 
     let mut recent_data = Data::fetch().expect("failed to initially fetch data");

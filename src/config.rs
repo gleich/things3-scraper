@@ -3,13 +3,14 @@ use std::fs;
 use anyhow::{Context, Result};
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize, PartialEq)]
+#[derive(Debug, Deserialize, PartialEq, Clone)]
 pub struct Config {
     pub endpoint: String,
     #[serde(default = "defaults::refresh")]
     pub refresh: u32,
     #[serde(default)]
     pub bearer_token: String,
+    pub sentry_url: String,
 }
 
 mod defaults {
@@ -49,13 +50,15 @@ mod tests {
             Config::parse(
                 r#"
         endpoint = "https://google.com/"
+        sentry_url = "https://ingest.sentry.io"
         "#,
             )
             .expect("failed to parse valid basic config"),
             Config {
                 endpoint: String::from("https://google.com/"),
                 refresh: 10,
-                bearer_token: String::new()
+                bearer_token: String::new(),
+                sentry_url: String::from("https://ingest.sentry.io")
             }
         );
         // complex valid config
@@ -65,13 +68,15 @@ mod tests {
         endpoint = "https://google.com/"
         refresh = 20
         bearer_token = "token"
+        sentry_url = "https://ingest.sentry.io"
         "#,
             )
             .expect("failed to parse valid basic config"),
             Config {
                 endpoint: String::from("https://google.com/"),
                 refresh: 20,
-                bearer_token: String::from("token")
+                bearer_token: String::from("token"),
+                sentry_url: String::from("https://ingest.sentry.io")
             }
         );
         // invalid config
