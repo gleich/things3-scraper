@@ -33,11 +33,17 @@ fn main() {
 
     println!();
     loop {
-        recent_data = Data::fetch().expect("failed to fetch most recent data");
-        recent_data
-            .send(&client, &config)
-            .expect("failed to send newest data");
-        info!("sent data");
+        let most_recent_data = Data::fetch().expect("failed to fetch most recent data");
+        // only send update request if data changed
+        if most_recent_data != recent_data {
+            recent_data = most_recent_data;
+            recent_data
+                .send(&client, &config)
+                .expect("failed to send newest data");
+            info!("sent data");
+        } else {
+            info!("data didn't change, no data sent");
+        }
         sleep(wait_time);
     }
 }
